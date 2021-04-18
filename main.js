@@ -30,8 +30,12 @@ function pageChanged() {
   });
 }
 
+function round(number) {
+  return Math.round(number * 100) / 100;
+}
+
 function parseNumber(numberString) {
-  return parseFloat(numberString.replaceAll('.', '').replace(',', '.'));
+  return round(parseFloat(numberString.replaceAll('.', '').replace(',', '.')));
 }
 
 function sumElements(nodeList) {
@@ -43,9 +47,26 @@ function sumElements(nodeList) {
 }
 
 function initialize(node) {
-  let totalPortfolioValue = sumElements(node.querySelectorAll("tbody tr [data-field='value']"));
-  let portfolioChange = sumElements(node.querySelectorAll("tbody tr [data-field='totalPl']"));
-  console.log("Total portfolio value: ", totalPortfolioValue, ", portfolio change: ", portfolioChange);
+  let totalValue = sumElements(node.querySelectorAll("tbody tr [data-field='value']"));
+  let changeAbsolute = sumElements(node.querySelectorAll("tbody tr [data-field='totalPl']"));
+  const investedAmount = totalValue - changeAbsolute;
+  const changeRelative = round(changeAbsolute * 100 / investedAmount);
+  renderStatistics({
+    totalValue,
+    changeAbsolute,
+    changeRelative,
+    investedAmount
+  }, node);
+}
+
+function renderStatistics(data, node) {
+  // TODO - render nicely
+  let el = document.createElement("div");
+  el.innerHTML = "Total portfolio value: " + data.totalValue + "€<br>" +
+    "Portfolio change: " + data.changeAbsolute + "€, " + data.changeRelative + "%" + "<br>" +
+    "Invested amount: " + data.investedAmount + "€";
+  node.parentNode.insertBefore(el, node.nextSibling);
+
 }
 
 window.onpopstate = history.onpushstate = pageChanged;
