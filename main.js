@@ -30,8 +30,22 @@ function pageChanged() {
   });
 }
 
+function parseNumber(numberString) {
+  return parseFloat(numberString.replaceAll('.', '').replace(',', '.'));
+}
+
+function sumElements(nodeList) {
+  let result = 0;
+  nodeList.forEach(el => {
+    result += parseNumber(el.getAttribute("title"));
+  });
+  return result;
+}
+
 function initialize(node) {
-  console.log("Inialize statistics with following node: ", node);
+  let totalPortfolioValue = sumElements(node.querySelectorAll("tbody tr [data-field='value']"));
+  let portfolioChange = sumElements(node.querySelectorAll("tbody tr [data-field='totalPl']"));
+  console.log("Total portfolio value: ", totalPortfolioValue, ", portfolio change: ", portfolioChange);
 }
 
 window.onpopstate = history.onpushstate = pageChanged;
