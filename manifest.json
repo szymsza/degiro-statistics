@@ -3,7 +3,6 @@
   "description": "Shows interesting portfolio statistics at the website of broker Degiro.",
   "version": "1.0",
   "manifest_version": 3,
-  "permissions": ["tabs"],
   "content_scripts": [
     {
       "matches": ["*://trader.degiro.nl/*"],
