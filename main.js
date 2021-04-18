@@ -51,20 +51,52 @@ function initialize(node) {
   let changeAbsolute = sumElements(node.querySelectorAll("tbody tr [data-field='totalPl']"));
   const investedAmount = totalValue - changeAbsolute;
   const changeRelative = round(changeAbsolute * 100 / investedAmount);
-  renderStatistics({
-    totalValue,
-    changeAbsolute,
-    changeRelative,
-    investedAmount
-  }, node);
+  renderStatistics([{
+    label: "Total portfolio value",
+    value: totalValue,
+    unit: "€"
+  }, {
+    label: "Absolute portfolio change",
+    value: changeAbsolute,
+    unit: "€"
+  }, {
+    label: "Relative portfolio change",
+    value: changeRelative,
+    unit: "%"
+  }, {
+    label: "Invested amount",
+    value: investedAmount,
+    unit: "€"
+  }], node);
+}
+
+function removeNodeList(nodeList) {
+  nodeList.forEach(e => e.parentNode.removeChild(e));
 }
 
 function renderStatistics(data, node) {
-  // TODO - render nicely
-  let el = document.createElement("div");
-  el.innerHTML = "Total portfolio value: " + data.totalValue + "€<br>" +
-    "Portfolio change: " + data.changeAbsolute + "€, " + data.changeRelative + "%" + "<br>" +
-    "Invested amount: " + data.investedAmount + "€";
+  let el = node.cloneNode(true);
+  removeNodeList(el.querySelectorAll("td:nth-child(n+3), th:nth-child(n+3)"));
+
+  // Element heading
+  el.querySelector("[data-name='productType']").innerText = "Portfolio statistics";
+
+  // Table header
+  el.querySelector("th:first-child>div").innerText = "Name";
+  el.querySelector("th:last-child>div").innerText = "Value";
+
+  // Table content
+  let tbody = el.querySelector("tbody");
+  let row = el.querySelector("tbody tr:first-child");
+  removeNodeList(el.querySelectorAll("tbody tr"));
+
+  for (let statistic of data) {
+    let newRow = row.cloneNode(true);
+    newRow.querySelector("td:first-child>*").innerText = statistic.label;
+    newRow.querySelector("td:last-child>*").innerText = statistic.value + statistic.unit;
+    tbody.append(newRow);
+  }
+
   node.parentNode.insertBefore(el, node.nextSibling);
 
 }
