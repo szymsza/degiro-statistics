@@ -65,7 +65,10 @@ function pageChanged() {
 
 function initialize(data, node) {
   LANGUAGE = document.documentElement.lang;
-  const { totalValue, changeAbsolute } = data;
+  const {
+    totalValue,
+    changeAbsolute
+  } = data;
 
   const investedAmount = totalValue - changeAbsolute;
   const changeRelative = _.round(changeAbsolute * 100 / investedAmount);

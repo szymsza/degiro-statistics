@@ -10,10 +10,12 @@
     "64": "icons/64.png",
     "128": "icons/128.png"
   },
-  "content_scripts": [
-    {
-      "matches": ["*://trader.degiro.nl/*"],
-      "js": ["main.js"]
-    }
-  ]
+  "action": {},
+  "content_scripts": [{
+    "matches": ["*://trader.degiro.nl/*"],
+    "js": ["main.js"]
+  }],
+  "background": {
+    "service_worker": "background.js"
+  }
 }
