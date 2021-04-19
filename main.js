@@ -22,6 +22,12 @@ function pageChanged() {
   if (document.location.hash !== TRIGGER_URL)
     return;
 
+  let listenerTimeout = null;
+  let statistics = {
+    totalValue: 0,
+    changeAbsolute: 0,
+  };
+
   // Callback for main container DOM change
   const callback = function(mutationsList, observer) {
     for (const mutation of mutationsList) {
@@ -31,9 +37,18 @@ function pageChanged() {
       const node = mutation.addedNodes[0];
       const data = node.dataset;
 
+      // Is product position -> save data
       if (typeof data === "object" && data.name === "positions" && data.empty === "false") {
-        observer.disconnect();
-        return initialize(node);
+        clearTimeout(listenerTimeout);
+
+        statistics.totalValue += _.sumElements(node.querySelectorAll("tbody tr [data-field='value']"));
+        statistics.changeAbsolute += _.sumElements(node.querySelectorAll("tbody tr [data-field='totalPl']"));
+
+        listenerTimeout = setTimeout(function() {
+          // All products loaded -> stop listening and render data
+          observer.disconnect();
+          initialize(statistics, node);
+        }, 50);
       }
     }
   };
@@ -48,11 +63,10 @@ function pageChanged() {
   });
 }
 
-function initialize(node) {
+function initialize(data, node) {
   LANGUAGE = document.documentElement.lang;
+  const { totalValue, changeAbsolute } = data;
 
-  let totalValue = _.sumElements(node.querySelectorAll("tbody tr [data-field='value']"));
-  let changeAbsolute = _.sumElements(node.querySelectorAll("tbody tr [data-field='totalPl']"));
   const investedAmount = totalValue - changeAbsolute;
   const changeRelative = _.round(changeAbsolute * 100 / investedAmount);
   renderStatistics([{
