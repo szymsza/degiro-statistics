@@ -3,6 +3,15 @@ const COLOURS = {
   red: "#cc4c3b",
   green: "#008753"
 };
+const LABELS = {
+  title: "Portfolio statistics",
+  nameHeading: "Name",
+  valueHeading: "Value",
+  totalValue: "Total value",
+  changeAbsolute: "Absolute change",
+  changeRelative: "Relative change",
+  investedAmount: "Invested amount",
+};
 
 function pageChanged() {
   if (document.location.hash !== TRIGGER_URL)
@@ -56,22 +65,22 @@ function initialize(node) {
   const investedAmount = totalValue - changeAbsolute;
   const changeRelative = round(changeAbsolute * 100 / investedAmount);
   renderStatistics([{
-    label: "Total value",
+    label: LABELS.totalValue,
     value: totalValue,
     unit: "€",
     coloured: false,
   }, {
-    label: "Absolute change",
+    label: LABELS.changeAbsolute,
     value: changeAbsolute,
     unit: "€",
     coloured: true,
   }, {
-    label: "Relative change",
+    label: LABELS.changeRelative,
     value: changeRelative,
     unit: "%",
     coloured: true,
   }, {
-    label: "Invested amount",
+    label: LABELS.investedAmount,
     value: investedAmount,
     unit: "€",
     coloured: false,
@@ -87,11 +96,11 @@ function renderStatistics(data, node) {
   removeNodeList(el.querySelectorAll("td:nth-child(n+3), th:nth-child(n+3)"));
 
   // Element heading
-  el.querySelector("[data-name='productType']").innerText = "Portfolio statistics";
+  el.querySelector("[data-name='productType']").innerText = LABELS.title;
 
   // Table header
-  el.querySelector("th:first-child>div").innerText = "Name";
-  el.querySelector("th:last-child>div").innerText = "Value";
+  el.querySelector("th:first-child>div").innerText = LABELS.nameHeading;
+  el.querySelector("th:last-child>div").innerText = LABELS.valueHeading;
 
   // Table content
   const tbody = el.querySelector("tbody");
@@ -100,15 +109,19 @@ function renderStatistics(data, node) {
 
   for (let statistic of data) {
     const newRow = row.cloneNode(true);
+
+    // Label
     newRow.querySelector("td:first-child>*").innerText = statistic.label;
 
+    // Value
     const valueCell = newRow.querySelector("td:last-child>*");
     const valueIsPositive = statistic.value >= 0;
-    valueCell.innerText = statistic.value + statistic.unit;
+    valueCell.innerText = (statistic.unit !== "%" ? statistic.unit + " " : "") + statistic.value + (statistic.unit === "%" ? statistic.unit : "");
     if (statistic.coloured) {
-      valueCell.innerText = (valueIsPositive ? "+" : "-") + valueCell.innerText;
+      valueCell.innerText = (valueIsPositive ? "+" : "-") + " " + valueCell.innerText;
       valueCell.style.color = valueIsPositive ? COLOURS.green : COLOURS.red;
     }
+
     tbody.append(newRow);
   }
 
