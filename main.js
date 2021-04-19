@@ -1,3 +1,4 @@
+// --- CONSTANTS ---
 const TRIGGER_URL = "#/portfolio";
 const COLOURS = {
   red: "#cc4c3b",
@@ -14,6 +15,9 @@ const LABELS = {
 };
 let LANGUAGE;
 
+
+
+// --- MAIN FUNCTIONS ---
 function pageChanged() {
   if (document.location.hash !== TRIGGER_URL)
     return;
@@ -44,37 +48,13 @@ function pageChanged() {
   });
 }
 
-function round(number) {
-  return Math.round(number * 100) / 100;
-}
-
-function parseNumber(numberString) {
-  return round(parseFloat(numberString.replaceAll('.', '').replace(',', '.')));
-}
-
-function formatNumber(number, unit) {
-  const numberString = number.toLocaleString(LANGUAGE);
-
-  if (unit === "%")
-    return numberString + unit;
-  return unit + " " + numberString;
-}
-
-function sumElements(nodeList) {
-  let result = 0;
-  nodeList.forEach(el => {
-    result += parseNumber(el.getAttribute("title"));
-  });
-  return result;
-}
-
 function initialize(node) {
   LANGUAGE = document.documentElement.lang;
 
-  let totalValue = sumElements(node.querySelectorAll("tbody tr [data-field='value']"));
-  let changeAbsolute = sumElements(node.querySelectorAll("tbody tr [data-field='totalPl']"));
+  let totalValue = _.sumElements(node.querySelectorAll("tbody tr [data-field='value']"));
+  let changeAbsolute = _.sumElements(node.querySelectorAll("tbody tr [data-field='totalPl']"));
   const investedAmount = totalValue - changeAbsolute;
-  const changeRelative = round(changeAbsolute * 100 / investedAmount);
+  const changeRelative = _.round(changeAbsolute * 100 / investedAmount);
   renderStatistics([{
     label: LABELS.totalValue,
     value: totalValue,
@@ -98,13 +78,9 @@ function initialize(node) {
   }], node);
 }
 
-function removeNodeList(nodeList) {
-  nodeList.forEach(e => e.parentNode.removeChild(e));
-}
-
 function renderStatistics(data, node) {
   const el = node.cloneNode(true);
-  removeNodeList(el.querySelectorAll("td:nth-child(n+3), th:nth-child(n+3)"));
+  _.removeNodeList(el.querySelectorAll("td:nth-child(n+3), th:nth-child(n+3)"));
 
   // Element heading
   el.querySelector("[data-name='productType']").innerText = LABELS.title;
@@ -116,7 +92,7 @@ function renderStatistics(data, node) {
   // Table content
   const tbody = el.querySelector("tbody");
   const row = el.querySelector("tbody tr:first-child");
-  removeNodeList(el.querySelectorAll("tbody tr"));
+  _.removeNodeList(el.querySelectorAll("tbody tr"));
 
   for (let statistic of data) {
     const newRow = row.cloneNode(true);
@@ -127,7 +103,7 @@ function renderStatistics(data, node) {
     // Value
     const valueCell = newRow.querySelector("td:last-child>*");
     const valueIsPositive = statistic.value >= 0;
-    valueCell.innerText = formatNumber(statistic.value, statistic.unit);
+    valueCell.innerText = _.formatNumber(statistic.value, statistic.unit);
     if (statistic.coloured) {
       valueCell.innerText = (valueIsPositive ? "+" : "-") + " " + valueCell.innerText;
       valueCell.style.color = valueIsPositive ? COLOURS.green : COLOURS.red;
@@ -140,5 +116,43 @@ function renderStatistics(data, node) {
 
 }
 
+
+
+// --- HELPERS ---
+class _ {
+  static round(number) {
+    return Math.round(number * 100) / 100;
+  }
+
+  static parseNumber(numberString) {
+    return _.round(parseFloat(numberString.replaceAll('.', '').replace(',', '.')));
+  }
+
+  static formatNumber(number, unit) {
+    const numberString = number.toLocaleString(LANGUAGE);
+
+    if (unit === "%")
+      return numberString + unit;
+    return unit + " " + numberString;
+  }
+
+  // Return sum of title attributes of elements of given node list
+  static sumElements(nodeList) {
+    let result = 0;
+    nodeList.forEach(el => {
+      result += _.parseNumber(el.getAttribute("title"));
+    });
+    return result;
+  }
+
+  // Delete given node list from DOM
+  static removeNodeList(nodeList) {
+    nodeList.forEach(e => e.parentNode.removeChild(e));
+  }
+}
+
+
+
+// --- INITIALIZATION ---
 window.onpopstate = history.onpushstate = pageChanged;
 pageChanged();
