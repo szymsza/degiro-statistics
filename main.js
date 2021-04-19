@@ -12,6 +12,7 @@ const LABELS = {
   changeRelative: "Relative change",
   investedAmount: "Invested amount",
 };
+let LANGUAGE;
 
 function pageChanged() {
   if (document.location.hash !== TRIGGER_URL)
@@ -51,6 +52,14 @@ function parseNumber(numberString) {
   return round(parseFloat(numberString.replaceAll('.', '').replace(',', '.')));
 }
 
+function formatNumber(number, unit) {
+  const numberString = number.toLocaleString(LANGUAGE);
+
+  if (unit === "%")
+    return numberString + unit;
+  return unit + " " + numberString;
+}
+
 function sumElements(nodeList) {
   let result = 0;
   nodeList.forEach(el => {
@@ -60,6 +69,8 @@ function sumElements(nodeList) {
 }
 
 function initialize(node) {
+  LANGUAGE = document.documentElement.lang;
+
   let totalValue = sumElements(node.querySelectorAll("tbody tr [data-field='value']"));
   let changeAbsolute = sumElements(node.querySelectorAll("tbody tr [data-field='totalPl']"));
   const investedAmount = totalValue - changeAbsolute;
@@ -116,7 +127,7 @@ function renderStatistics(data, node) {
     // Value
     const valueCell = newRow.querySelector("td:last-child>*");
     const valueIsPositive = statistic.value >= 0;
-    valueCell.innerText = (statistic.unit !== "%" ? statistic.unit + " " : "") + statistic.value + (statistic.unit === "%" ? statistic.unit : "");
+    valueCell.innerText = formatNumber(statistic.value, statistic.unit);
     if (statistic.coloured) {
       valueCell.innerText = (valueIsPositive ? "+" : "-") + " " + valueCell.innerText;
       valueCell.style.color = valueIsPositive ? COLOURS.green : COLOURS.red;
