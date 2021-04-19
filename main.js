@@ -1,4 +1,8 @@
 const TRIGGER_URL = "#/portfolio";
+const COLOURS = {
+  red: "#cc4c3b",
+  green: "#008753"
+};
 
 function pageChanged() {
   if (document.location.hash !== TRIGGER_URL)
@@ -52,21 +56,25 @@ function initialize(node) {
   const investedAmount = totalValue - changeAbsolute;
   const changeRelative = round(changeAbsolute * 100 / investedAmount);
   renderStatistics([{
-    label: "Total portfolio value",
+    label: "Total value",
     value: totalValue,
-    unit: "€"
+    unit: "€",
+    coloured: false,
   }, {
-    label: "Absolute portfolio change",
+    label: "Absolute change",
     value: changeAbsolute,
-    unit: "€"
+    unit: "€",
+    coloured: true,
   }, {
-    label: "Relative portfolio change",
+    label: "Relative change",
     value: changeRelative,
-    unit: "%"
+    unit: "%",
+    coloured: true,
   }, {
     label: "Invested amount",
     value: investedAmount,
-    unit: "€"
+    unit: "€",
+    coloured: false,
   }], node);
 }
 
@@ -75,7 +83,7 @@ function removeNodeList(nodeList) {
 }
 
 function renderStatistics(data, node) {
-  let el = node.cloneNode(true);
+  const el = node.cloneNode(true);
   removeNodeList(el.querySelectorAll("td:nth-child(n+3), th:nth-child(n+3)"));
 
   // Element heading
@@ -86,14 +94,21 @@ function renderStatistics(data, node) {
   el.querySelector("th:last-child>div").innerText = "Value";
 
   // Table content
-  let tbody = el.querySelector("tbody");
-  let row = el.querySelector("tbody tr:first-child");
+  const tbody = el.querySelector("tbody");
+  const row = el.querySelector("tbody tr:first-child");
   removeNodeList(el.querySelectorAll("tbody tr"));
 
   for (let statistic of data) {
-    let newRow = row.cloneNode(true);
+    const newRow = row.cloneNode(true);
     newRow.querySelector("td:first-child>*").innerText = statistic.label;
-    newRow.querySelector("td:last-child>*").innerText = statistic.value + statistic.unit;
+
+    const valueCell = newRow.querySelector("td:last-child>*");
+    const valueIsPositive = statistic.value >= 0;
+    valueCell.innerText = statistic.value + statistic.unit;
+    if (statistic.coloured) {
+      valueCell.innerText = (valueIsPositive ? "+" : "-") + valueCell.innerText;
+      valueCell.style.color = valueIsPositive ? COLOURS.green : COLOURS.red;
+    }
     tbody.append(newRow);
   }
 
