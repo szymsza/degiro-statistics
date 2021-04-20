@@ -1,0 +1,37 @@
+body {
+  margin: 0;
+  padding: 0;
+  color: white;
+  font-family: sans-serif;
+  font-size: 16px;
+  background-color: #181a21;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 700px;
+  padding: 2rem;
+}
+
+h1, h2 {
+  color: #009fdf;
+}
+
+h2 {
+  margin: 2.5rem 0 1rem;
+}
+
+a {
+  color: #009fdf;
+  text-decoration: underline;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+p {
+  margin: 0 0 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
