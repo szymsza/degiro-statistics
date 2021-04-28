@@ -131,7 +131,7 @@ function renderStatistics(data, node) {
     tbody.append(newRow);
   }
 
-  node.parentNode.insertBefore(el, node.nextSibling);
+  node.parentNode.prepend(el);
 
 }
 
