@@ -13,13 +13,14 @@ const LABELS = {
   changeRelative: "Relative change",
   investedAmount: "Invested amount",
 };
+const ELEMENT_ID = "degiro-statistics-extension-table";
 let LANGUAGE;
 
 
 
 // --- MAIN FUNCTIONS ---
 function pageChanged() {
-  if (document.location.hash !== TRIGGER_URL)
+  if (document.location.hash !== TRIGGER_URL || document.getElementById(ELEMENT_ID))
     return;
 
   let listenerTimeout = null;
@@ -97,6 +98,7 @@ function initialize(data, node) {
 
 function renderStatistics(data, node) {
   const el = node.cloneNode(true);
+  el.id = ELEMENT_ID;
   _.removeNodeList(el.querySelectorAll("td:nth-child(n+3), th:nth-child(n+3)"));
 
   // Element heading
