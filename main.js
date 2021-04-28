@@ -72,7 +72,8 @@ function initialize(data, node) {
   } = data;
 
   const investedAmount = totalValue - changeAbsolute;
-  const changeRelative = _.round(changeAbsolute * 100 / investedAmount);
+  //const changeRelative = _.round(changeAbsolute * 100 / investedAmount);
+  const changeRelative = -100;
   renderStatistics([{
     label: LABELS.totalValue,
     value: totalValue,
@@ -122,7 +123,7 @@ function renderStatistics(data, node) {
     // Value
     const valueCell = newRow.querySelector("td:last-child>*");
     const valueIsPositive = statistic.value >= 0;
-    valueCell.innerText = _.formatNumber(statistic.value, statistic.unit);
+    valueCell.innerText = _.formatNumber(Math.abs(statistic.value), statistic.unit);
     if (statistic.coloured) {
       valueCell.innerText = (valueIsPositive ? "+" : "-") + " " + valueCell.innerText;
       valueCell.style.color = valueIsPositive ? COLOURS.green : COLOURS.red;
