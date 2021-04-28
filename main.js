@@ -72,8 +72,7 @@ function initialize(data, node) {
   } = data;
 
   const investedAmount = totalValue - changeAbsolute;
-  //const changeRelative = _.round(changeAbsolute * 100 / investedAmount);
-  const changeRelative = -100;
+  const changeRelative = _.round(changeAbsolute * 100 / investedAmount);
   renderStatistics([{
     label: LABELS.totalValue,
     value: totalValue,
