@@ -99,14 +99,14 @@ function initialize(data, node) {
 function renderStatistics(data, node) {
   const el = node.cloneNode(true);
   el.id = ELEMENT_ID;
-  _.removeNodeList(el.querySelectorAll("td:nth-child(n+3), th:nth-child(n+3)"));
+  _.removeNodeList(el.querySelectorAll("td:nth-child(n+3), th:nth-child(n+3), header>button"));
 
   // Element heading
-  el.querySelector("[data-name='productType']").innerText = LABELS.title;
+  el.querySelector("header>h2").innerText = LABELS.title;
 
   // Table header
-  el.querySelector("th:first-child>div").innerText = LABELS.nameHeading;
-  el.querySelector("th:last-child>div").innerText = LABELS.valueHeading;
+  el.querySelector("th:first-child").innerText = LABELS.nameHeading;
+  el.querySelector("th:last-child").innerText = LABELS.valueHeading;
 
   // Table content
   const tbody = el.querySelector("tbody");
@@ -117,10 +117,10 @@ function renderStatistics(data, node) {
     const newRow = row.cloneNode(true);
 
     // Label
-    newRow.querySelector("td:first-child>*").innerText = statistic.label;
+    newRow.querySelector("td:first-child").innerText = statistic.label;
 
     // Value
-    const valueCell = newRow.querySelector("td:last-child>*");
+    const valueCell = newRow.querySelector("td:last-child");
     const valueIsPositive = statistic.value >= 0;
     valueCell.innerText = _.formatNumber(Math.abs(statistic.value), statistic.unit);
     if (statistic.coloured) {
