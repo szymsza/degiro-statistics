@@ -14,6 +14,7 @@ const LABELS = {
   investedAmount: "Invested amount",
 };
 const ELEMENT_ID = "degiro-statistics-extension-table";
+const DATA_LOAD_TIMEOUT = 250;
 let LANGUAGE;
 
 
@@ -28,6 +29,7 @@ function pageChanged() {
     totalValue: 0,
     changeAbsolute: 0,
   };
+  let templateTableNode = null;
 
   // Callback for main container DOM change
   const callback = function(mutationsList, observer) {
@@ -37,20 +39,29 @@ function pageChanged() {
 
       const node = mutation.addedNodes[0];
       const data = node.dataset;
+      const totalValueSelector = "tbody tr [data-field='value']";
+      const changeAbsoluteSelector = "tbody tr [data-field='totalPl']";
 
       // Is product position -> save data
-      if (typeof data === "object" && data.name === "positions" && data.empty === "false") {
-        clearTimeout(listenerTimeout);
+      if (typeof data !== "object" || data.name !== "positions" || data.empty !== "false")
+        continue;
 
-        statistics.totalValue += _.sumElements(node.querySelectorAll("tbody tr [data-field='value']"));
-        statistics.changeAbsolute += _.sumElements(node.querySelectorAll("tbody tr [data-field='totalPl']"));
+      clearTimeout(listenerTimeout);
 
-        listenerTimeout = setTimeout(function() {
-          // All products loaded -> stop listening and render data
-          observer.disconnect();
-          initialize(statistics, node);
-        }, 50);
+      if (node.querySelector(totalValueSelector) && node.querySelector(changeAbsoluteSelector)) {
+        // Data table
+        statistics.totalValue += _.sumElements(node.querySelectorAll(totalValueSelector));
+        statistics.changeAbsolute += _.sumElements(node.querySelectorAll(changeAbsoluteSelector));
+      } else {
+        // Template teble
+        templateTableNode = node;
       }
+
+      listenerTimeout = setTimeout(function() {
+        // All products loaded -> stop listening and render data
+        observer.disconnect();
+        initialize(statistics, templateTableNode);
+      }, DATA_LOAD_TIMEOUT);
     }
   };
 
